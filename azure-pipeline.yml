@@ -35,7 +35,7 @@ stages:
               command: build
               repository: ${{ parameters.imageName }}
               containerRegistry: 'registryConnection'
-              dockerfile: "**/qa.dockerfile"
+              dockerfile: "**/dockerfile"
               tags: ${{ parameters.tag }}
               arguments: '--build-arg APP_ENV="$(app_var)"'
 
@@ -47,4 +47,4 @@ stages:
               repository: ${{ parameters.imageName }}
               tags: |
                 ${{ parameters.tag }}
-                
+
