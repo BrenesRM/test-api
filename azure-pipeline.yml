@@ -1,49 +1,30 @@
 trigger:
   - main
 
-pool: local-agent
-
-resources:
-  - repo: self
-
 variables:
-  - group: "CICD"
-  - name: app_var
-    value: $[variables.appVariable]
-
-parameters:
-  - name: tag
-    default: "$(Build.BuildId)"
-  - name: imageName
-    default: "test-api"
+  NODE_ENV: prod
+  NODE_PORT: 3001
 
 stages:
   - stage: Build
-    displayName: Build image
     jobs:
-      - job: Build
-        displayName: Build
-
+      - job: BuildAndPush
+        pool:
+          vmImage: 'ubuntu-latest'
         steps:
-          - script: |
-              echo "var=$(app_var)"
-              echo "tag= ${{ parameters.tag }}"
-
           - task: Docker@2
-            displayName: Build an image
+            displayName: 'Build Docker Image'
             inputs:
               command: build
-              repository: ${{ parameters.imageName }}
-              containerRegistry: 'registryConnection'
-              dockerfile: "**/qa.dockerfile"
-              tags: ${{ parameters.tag }}
-              arguments: '--build-arg APP_ENV="$(app_var)"'
+              dockerfile: '**/Dockerfile'
+              tags: '1.0.0'
+              arguments: |
+                --build-arg NODE_ENV=$(NODE_ENV) --build-arg NODE_PORT=$(NODE_PORT)
 
           - task: Docker@2
-            displayName: 'Push Docker Image'
+            displayName: 'Push Docker Image to ACR'
             inputs:
-              command: 'push'
-              containerRegistry: 'registryConnection'
-              repository: ${{ parameters.imageName }}
-              tags: |
-                ${{ parameters.tag }}
+              command: push
+              containerRegistry: 'yourRegistryConnection'
+              repository: 'test-api'
+              tags: '1.0.0'
