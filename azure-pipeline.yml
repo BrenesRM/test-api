@@ -25,6 +25,6 @@ stages:
             displayName: 'Push Docker Image to ACR'
             inputs:
               command: push
-              containerRegistry: 'yourRegistryConnection'
+              containerRegistry: 'registryConnection'
               repository: 'test-api'
               tags: '1.0.0'
